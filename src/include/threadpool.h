@@ -17,5 +17,12 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#include "threadpool.h"
+#ifndef THREADPOOL_H
+#define THREADPOOL_H
 
+class threadpool
+{
+
+};
+
+#endif // THREADPOOL_H
