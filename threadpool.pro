@@ -11,5 +11,6 @@ INCLUDEPATH += . \
 	src/include
 
 # Input
-HEADERS += src/include/threadpool.h
+HEADERS += src/include/threadpool.h \
+	src/include/thread.h
 SOURCES += src/lib/threadpool.cpp

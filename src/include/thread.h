@@ -17,23 +17,27 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef THREADPOOL_H
-#define THREADPOOL_H
+#ifndef THREAD_H
+#define THREAD_H
 
 namespace threadpool {
 
-class threadpool
+class threadpool;
+
+class thread
 {
-	class thread_info
+	std::thread thred;
+private:
+	static void join_pool(const thread& t, const threadpool& tp) {
+		tp.join(t);
+	}
+public:
+	thread(const threadpool& tp)
+		: thread(join_pool, *this, tp)
 	{
-	};
-	
-	std::vector<thread_info>;
-	void join(const thread& t) {
-		
 	}
 };
 
 }
 
-#endif // THREADPOOL_H
+#endif // THREAD_H
