@@ -95,7 +95,7 @@ function(cp_script script_name)
 endfunction()
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/src/") # for config.h
-#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/include")
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/include")
 
 #
 # options

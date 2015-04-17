@@ -13,4 +13,8 @@ INCLUDEPATH += . \
 # Input
 HEADERS += src/include/threadpool.h \
 	src/include/thread.h
-SOURCES += src/lib/threadpool.cpp
+SOURCES += src/lib/threadpool.cpp \
+    src/include/thread.cpp
+
+OTHER_FILES += src/lib/CMakeLists.txt \
+	CMakeLists.txt

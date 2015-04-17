@@ -20,17 +20,24 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
+#include <vector>
+
 namespace threadpool {
+
+class thread;
 
 class threadpool
 {
-	class thread_info
+	struct thread_home
 	{
+		thread* t;
+		mailbox;
 	};
-	
-	std::vector<thread_info>;
-	void join(const thread& t) {
-		
+
+	std::vector<thread*> threads;
+
+	void join(thread& t) {
+		threads.push_back(&t);
 	}
 };
 

@@ -18,7 +18,7 @@ A simple ALSA implementation of a realtime safe threadpool.
 # 2 Why using threadpool?
 See point 1.
 
-# License
+# 3 License
 Please see the LICENSE.txt file.
 
 # 4 Documentation

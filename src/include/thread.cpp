@@ -17,29 +17,14 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef THREAD_H
-#define THREAD_H
+#include "thread.h"
+#include "threadpool.h"
 
-#include <alsa/asoundlib.h>
-#include <thread>
-
-namespace threadpool {
-
-class threadpool;
-
-class thread
+namespace threadpool
 {
-	std::thread thred;
-	snd_pcm_t* audio_handle = nullptr;
-private:
-	static void join_pool(const thread* t, const threadpool& tp);
-public:
-	thread(const threadpool& tp)
-		: thred(join_pool, this, tp)
-	{
+
+	void thread::join_pool(const thread *t, const threadpool &tp) {
+		tp.join(*t);
 	}
-};
 
 }
-
-#endif // THREAD_H
