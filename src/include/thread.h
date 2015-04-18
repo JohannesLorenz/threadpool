@@ -31,6 +31,11 @@ class thread
 {
 	std::thread thred;
 	snd_pcm_t* audio_handle = nullptr;
+
+	static snd_pcm_t get_audio_handle() {
+		if(0 > snd_pcm_open(&audio_handle, ))
+		 throw "Could not open pcm device";
+	}
 private:
 	static void join_pool(const thread* t, const threadpool& tp);
 public:
