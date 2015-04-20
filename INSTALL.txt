@@ -16,8 +16,7 @@ CONTENTS
 You will need the following libraries, headers and tools:
 
   * at least g++ 4.8 or clang 3.3
-  * boost % TODO: not
-  * alsa
+  * pthreads
   * cmake
 
 1 Installation of the commandline interface

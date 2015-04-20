@@ -13,7 +13,7 @@ Welcome! Thank you for considering the README file.
   9. Contact
 
 # 1 What is threadpool?
-A simple ALSA implementation of a realtime safe threadpool.
+A simple ALSA implementation of a (mostly) realtime safe threadpool.
 
 # 2 Why using threadpool?
 See point 1.
@@ -31,11 +31,11 @@ Please see the INSTALL.txt file.
 
 # 7 Thanks to
 In alphabetical order, I thank:
-  * Clemens Ladisch from ALSA [1]
+  * Everyone from Jack [1]
   * Mark McCurry (fundamental) [2] from zynaddsubfx [3]
 
 # 8 Links
-  1. http://www.alsa-project.org
+  1. http://www.alsa-project.org # TODO: link jack here
   2. http://fundamental-code.com/
   3. http://zynaddsubfx.sourceforge.net/
 
