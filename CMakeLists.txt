@@ -46,7 +46,7 @@ MESSAGE("This is the Makefile for `${PROJECT_NAME} ${VERSION}'")
 MESSAGE("")
 MESSAGE("READING CONFIGURATION...")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # help
 # TODO: $myproject from project()
@@ -124,14 +124,20 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in
 MESSAGE("CHECKING FOR LIBRARIES...")
 
 #TODO!!!
-find_package(PkgConfig REQUIRED)
+#find_package(PkgConfig REQUIRED)
 
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED OFF)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.49.0
-	REQUIRED
-	COMPONENTS graph)
+#set(Boost_USE_STATIC_LIBS OFF)
+#set(Boost_USE_MULTITHREADED OFF)
+#set(Boost_USE_STATIC_RUNTIME OFF)
+#find_package(Boost 1.49.0
+#	REQUIRED
+#	COMPONENTS graph)
+
+find_package(Threads) # = pthreads, for std::thread
+list(APPEND THREAD_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+find_package(Alsa REQUIRED)
+list(APPEND AUDIO_LIBRARIES ${ASOUND_LIBRARY})
+list(APPEND AUDIO_LIBRARY_DIRS ${ASOUND_LIBRARY_DIRS})
 
 #todo: -> rtosc?
 

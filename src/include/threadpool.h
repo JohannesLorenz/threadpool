@@ -24,21 +24,23 @@
 
 namespace threadpool {
 
-class thread;
+class thread_t;
 
-class threadpool
+class threadpool_t
 {
-	struct thread_home
+	/*struct thread_home
 	{
 		thread* t;
 		mailbox;
-	};
+	};*/
 
-	std::vector<thread*> threads;
+	std::vector<thread_t*> threads;
 
-	void join(thread& t) {
+	void join(thread_t& t) {
 		threads.push_back(&t);
 	}
+
+	friend class thread_t;
 };
 
 }

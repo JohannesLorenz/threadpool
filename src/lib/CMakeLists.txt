@@ -4,5 +4,6 @@ file(GLOB lib_src ${src_dir}/*.cpp)
 file(GLOB lib_hdr ${src_dir}../include/*.h)
 
 add_library(threadpool SHARED ${lib_src} ${lib_hdr})
+target_link_libraries(threadpool ${THREAD_LIBRARIES} ${AUDIO_LIBRARIES})
 
 

@@ -17,14 +17,61 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
+#include <iostream>
+
 #include "thread.h"
 #include "threadpool.h"
 
 namespace threadpool
 {
 
-	void thread::join_pool(const thread *t, const threadpool &tp) {
-		tp.join(*t);
+snd_pcm_t *thread_t::create_audio_handle()
+{
+	int err;
+	snd_pcm_t* ret_val = nullptr;
+	for(int cur_dev = 0; !ret_val && cur_dev < 8; ++cur_dev)
+	{
+		std::string dev_name = "hw:0,2," + std::to_string(cur_dev);
+
+		std::cerr << "Opening device: " << dev_name << std::endl;
+		err = snd_pcm_open(&ret_val, dev_name.c_str(),
+			SND_PCM_STREAM_CAPTURE, 0);
+		if(0 > err)
+		{
+			std::cerr << "Could not open pcm device: "
+				<< snd_strerror(err) << std::endl;
+			ret_val = nullptr;
+		}
+		else
+		{
+			std::cerr << "Opened device: "
+				<< dev_name.c_str() << std::endl;
+		}
 	}
 
+	if(!ret_val)
+	{
+		clean_up();
+		std::cerr << "Could not open any pcm device: "
+				<< snd_strerror(err) << std::endl;
+		throw "Could not open pcm device";
+	}
+	return ret_val;
+}
+
+void thread_t::join_pool(thread_t *t, threadpool_t *tp) {
+	tp->join(*t);
+}
+
+void thread_t::clean_up() {
+	thred.join();
+}
+
+thread_t::thread_t(threadpool_t &tp, bool ) :
+	thred(join_pool, this, &tp),
+	audio_handle(create_audio_handle())
+{
+}
+
+thread_t::~thread_t() { clean_up(); }
 }

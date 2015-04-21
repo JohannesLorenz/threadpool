@@ -17,32 +17,64 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
-#ifndef THREAD_H
-#define THREAD_H
+#include <iostream>
 
-#include <atomic>
-#include <alsa/asoundlib.h>
-#include <thread>
+#include "thread.h"
+#include "threadpool.h"
 
-namespace threadpool {
+void get_free() {
+char **hints;
+/* Enumerate sound devices */
+int err = snd_device_name_hint(-1, "pcm", (void***)&hints);
+if (err != 0)
+   return;//Error! Just return
 
-class threadpool_t;
+char** n = hints;
+while (*n != NULL) {
 
-class thread_t
-{
-	std::thread thred;
-	snd_pcm_t* audio_handle = nullptr;
+    char *name = snd_device_name_get_hint(*n, "NAME");
 
-	snd_pcm_t* create_audio_handle();
-private:
-	static void join_pool(thread_t *t, threadpool_t* tp);
-	void clean_up();
-public:
-	thread_t(threadpool_t& tp, bool = true);
+    if (name != NULL && 0 != strcmp("null", name)) {
+	//Copy name to another buffer and then free it
+	std::cerr << name << std::endl;
+	free(name);
+    }
+    n++;
+}//End of while
 
-	~thread_t();
-};
-
+//Free hint buffer too
+snd_device_name_free_hint((void**)hints);
 }
 
-#endif // THREAD_H
+int main()
+{
+	get_free();
+
+	try {
+
+		threadpool::threadpool_t tp;
+		using thread_t = threadpool::thread_t;
+
+		thread_t t1(tp);
+		thread_t t2(tp);
+		//thread_t t2(tp);
+
+	} catch (const char* err) {
+		std::cerr << "Aborting on error caught: " << err << std::endl;
+		return 1;
+	}
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
