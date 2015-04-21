@@ -22,41 +22,18 @@
 #include "thread.h"
 #include "threadpool.h"
 
-void get_free() {
-char **hints;
-/* Enumerate sound devices */
-int err = snd_device_name_hint(-1, "pcm", (void***)&hints);
-if (err != 0)
-   return;//Error! Just return
-
-char** n = hints;
-while (*n != NULL) {
-
-    char *name = snd_device_name_get_hint(*n, "NAME");
-
-    if (name != NULL && 0 != strcmp("null", name)) {
-	//Copy name to another buffer and then free it
-	std::cerr << name << std::endl;
-	free(name);
-    }
-    n++;
-}//End of while
-
-//Free hint buffer too
-snd_device_name_free_hint((void**)hints);
-}
-
 int main()
 {
-	get_free();
-
 	try {
 
 		threadpool::threadpool_t tp;
 		using thread_t = threadpool::thread_t;
 
 		thread_t t1(tp);
+		std::cerr << "test" << std::endl;
 		thread_t t2(tp);
+	std::cerr << "test" << std::endl;
+
 		//thread_t t2(tp);
 
 	} catch (const char* err) {

@@ -20,7 +20,10 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
+#include <iostream>
 #include <vector>
+#include <mutex>
+#include "semaphore.h" // TODO: std::sem?
 
 namespace threadpool {
 
@@ -33,14 +36,50 @@ class threadpool_t
 		thread* t;
 		mailbox;
 	};*/
+	sem_t sem;
 
+	std::mutex m;
 	std::vector<thread_t*> threads;
+	
+	void enqueue() { sem_wait(&sem);  }
 
 	void join(thread_t& t) {
-		threads.push_back(&t);
+	//	(void) t;
+		m.lock();
+		threads.push_back(&t); // TODO: insert ordered?
+		m.unlock();
+		// TODO: make this thread-safe: locks
+		enqueue();
+	}
+
+	bool release_thread() {
+		return 0 == sem_post(&sem);
+	}
+	
+	// debugging
+	int get_value() {
+		int ret;
+		sem_getvalue(&sem, &ret);
+		return ret;
 	}
 
 	friend class thread_t;
+
+public:
+	threadpool_t() {
+		sem_init(&sem, 0, 0);
+	}
+	~threadpool_t() {
+		std::cerr << get_value() << std::endl;
+		while(release_thread()) {
+			std::cerr<<"post"<<std::endl;
+		}
+		for(thread_t* t : threads) {
+	//		std::cerr << "joining..." << std::endl;
+	//		t->join();
+		}
+		sem_destroy(&sem);
+	}
 };
 
 }

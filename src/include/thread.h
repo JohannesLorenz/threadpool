@@ -21,7 +21,6 @@
 #define THREAD_H
 
 #include <atomic>
-#include <alsa/asoundlib.h>
 #include <thread>
 
 namespace threadpool {
@@ -31,14 +30,12 @@ class threadpool_t;
 class thread_t
 {
 	std::thread thred;
-	snd_pcm_t* audio_handle = nullptr;
-
-	snd_pcm_t* create_audio_handle();
 private:
 	static void join_pool(thread_t *t, threadpool_t* tp);
 	void clean_up();
 public:
-	thread_t(threadpool_t& tp, bool = true);
+	void join();
+	thread_t(threadpool_t& tp);
 
 	~thread_t();
 };

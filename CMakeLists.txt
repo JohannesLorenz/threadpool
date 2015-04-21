@@ -46,7 +46,7 @@ MESSAGE("This is the Makefile for `${PROJECT_NAME} ${VERSION}'")
 MESSAGE("")
 MESSAGE("READING CONFIGURATION...")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 # help
 # TODO: $myproject from project()
@@ -135,9 +135,6 @@ MESSAGE("CHECKING FOR LIBRARIES...")
 
 find_package(Threads) # = pthreads, for std::thread
 list(APPEND THREAD_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
-find_package(Alsa REQUIRED)
-list(APPEND AUDIO_LIBRARIES ${ASOUND_LIBRARY})
-list(APPEND AUDIO_LIBRARY_DIRS ${ASOUND_LIBRARY_DIRS})
 
 #todo: -> rtosc?
 
