@@ -65,18 +65,24 @@ class threadpool_t
 
 	friend class thread_t;
 
+	std::vector<thread_t> zombies;
 public:
+	void die_here(thread_t& ill_thread) {
+		ill_thread.tp = nullptr; // don't die twice
+		zombies.push_back(std::move(ill_thread));
+	}
+
 	threadpool_t() {
 		sem_init(&sem, 0, 0);
 	}
 	~threadpool_t() {
 		std::cerr << get_value() << std::endl;
-		while(release_thread()) {
-			std::cerr<<"post"<<std::endl;
+		for(int count = threads.size(); count; --count) {
+			release_thread();
 		}
-		for(thread_t* t : threads) {
-	//		std::cerr << "joining..." << std::endl;
-	//		t->join();
+		for(thread_t& t : zombies) {
+			std::cerr << "joining..." << std::endl;
+			t.join();
 		}
 		sem_destroy(&sem);
 	}

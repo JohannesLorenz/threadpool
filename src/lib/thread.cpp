@@ -30,13 +30,19 @@ void thread_t::join_pool(thread_t *t, threadpool_t *tp) {
 }
 
 void thread_t::clean_up() {
-	thred.join();
+	if(tp) {
+       	tp->die_here(*this);
+//	 tp->die_here(std::move(*this));
+//	thred.join();
+	std::cerr << "dying..." << std::endl;
+	}
 }
 
 void thread_t::join() { thred.join();  }
 
-thread_t::thread_t(threadpool_t &tp) :
-	thred(join_pool, this, &tp)
+thread_t::thread_t(threadpool_t &_tp) :
+	thred(join_pool, this, &_tp),
+	tp(&_tp)
 {
 }
 

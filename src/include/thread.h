@@ -30,12 +30,17 @@ class threadpool_t;
 class thread_t
 {
 	std::thread thred;
+public: // TODO!
+	threadpool_t* tp;
 private:
 	static void join_pool(thread_t *t, threadpool_t* tp);
 	void clean_up();
 public:
 	void join();
-	thread_t(threadpool_t& tp);
+	thread_t(threadpool_t& _tp);
+	thread_t(const thread_t& ) = delete;
+	thread_t(thread_t&& ) = default;
+
 
 	~thread_t();
 };

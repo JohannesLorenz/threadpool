@@ -30,9 +30,9 @@ int main()
 		using thread_t = threadpool::thread_t;
 
 		thread_t t1(tp);
-		std::cerr << "test" << std::endl;
-		thread_t t2(tp);
-	std::cerr << "test" << std::endl;
+//		std::cerr << "test" << std::endl;
+//		thread_t t2(tp);
+//	std::cerr << "test" << std::endl;
 
 		//thread_t t2(tp);
 
