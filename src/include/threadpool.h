@@ -68,8 +68,8 @@ class threadpool_t
 	std::vector<thread_t> zombies;
 public:
 	void die_here(thread_t& ill_thread) {
-		ill_thread.tp = nullptr; // don't die twice
-		ill_thread.running = false;
+		//ill_thread.tp = nullptr; // don't die twice
+		ill_thread.running = false; // don't die twice
 		zombies.push_back(std::move(ill_thread));
 	}
 	void add_me(thread_t& self) {
