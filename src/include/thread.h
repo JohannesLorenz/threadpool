@@ -30,6 +30,8 @@ class threadpool_t;
 class thread_t
 {
 	std::thread thred;
+public: // TODO
+	bool running = true;
 public: // TODO!
 	threadpool_t* tp;
 private:

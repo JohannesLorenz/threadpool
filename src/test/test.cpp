@@ -25,11 +25,17 @@
 int main()
 {
 	try {
-
-		threadpool::threadpool_t tp;
+		
 		using thread_t = threadpool::thread_t;
-
+		thread_t* t2_ptr;
+		{
+		threadpool::threadpool_t tp;
+	
 		thread_t t1(tp);
+		t2_ptr = new thread_t(tp);
+
+		}
+		delete t2_ptr;
 //		std::cerr << "test" << std::endl;
 //		thread_t t2(tp);
 //	std::cerr << "test" << std::endl;

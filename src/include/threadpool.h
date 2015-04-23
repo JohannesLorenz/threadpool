@@ -38,16 +38,16 @@ class threadpool_t
 	};*/
 	sem_t sem;
 
-	std::mutex m;
+//	std::mutex init_mutex;
 	std::vector<thread_t*> threads;
 	
 	void enqueue() { sem_wait(&sem);  }
 
-	void join(thread_t& t) {
+	void join(thread_t& ) {
 	//	(void) t;
-		m.lock();
+	/*	init_mutex.lock();
 		threads.push_back(&t); // TODO: insert ordered?
-		m.unlock();
+		init_mutex.unlock();*/
 		// TODO: make this thread-safe: locks
 		enqueue();
 	}
@@ -69,7 +69,11 @@ class threadpool_t
 public:
 	void die_here(thread_t& ill_thread) {
 		ill_thread.tp = nullptr; // don't die twice
+		ill_thread.running = false;
 		zombies.push_back(std::move(ill_thread));
+	}
+	void add_me(thread_t& self) {
+		threads.push_back(&self);
 	}
 
 	threadpool_t() {
@@ -77,7 +81,12 @@ public:
 	}
 	~threadpool_t() {
 		std::cerr << get_value() << std::endl;
-		for(int count = threads.size(); count; --count) {
+//		init_mutex.lock();
+		for(thread_t* t : threads)
+		 t->tp = nullptr;
+		std::size_t sz = threads.size();
+//		init_mutex.unlock();
+		for(int count = sz; count; --count) {
 			release_thread();
 		}
 		for(thread_t& t : zombies) {

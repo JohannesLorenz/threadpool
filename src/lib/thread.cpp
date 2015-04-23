@@ -30,12 +30,15 @@ void thread_t::join_pool(thread_t *t, threadpool_t *tp) {
 }
 
 void thread_t::clean_up() {
-	if(tp) {
+	std::cerr << "cleanup" << std::endl;
+	if(tp) { // if tp still exists and ???
        	tp->die_here(*this);
 //	 tp->die_here(std::move(*this));
 //	thred.join();
 	std::cerr << "dying..." << std::endl;
 	}
+	else if(running)
+	 join();
 }
 
 void thread_t::join() { thred.join();  }
@@ -44,6 +47,7 @@ thread_t::thread_t(threadpool_t &_tp) :
 	thred(join_pool, this, &_tp),
 	tp(&_tp)
 {
+	_tp.add_me(*this);
 }
 
 thread_t::~thread_t() { clean_up(); }
