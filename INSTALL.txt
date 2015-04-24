@@ -31,6 +31,7 @@ In this directory, type:
   cmake	-DCOMPILER=clang \
 	-DCMAKE_BUILD_TYPE=Release \
 	..
+TODO: stoat
 
 2 Running
 :::::::::

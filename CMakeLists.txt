@@ -181,7 +181,7 @@ MESSAGE("READING SUB-DIRECTORIES...")
 add_subdirectory(src)
 add_subdirectory(doc)
 
-add_custom_target(stoat stoat -c -w /usr/local/share/stoat/whitelist.txt -b /usr/local/share/stoat/blacklist.txt -w ${CMAKE_CURRENT_SOURCE_DIR}/data/stoat_suppression_list.txt -r ${CMAKE_CURRENT_BINARY_DIR}/src/)
+add_custom_target(stoat_threadpool stoat -c -w /usr/local/share/stoat/whitelist.txt -b /usr/local/share/stoat/blacklist.txt -w ${CMAKE_CURRENT_SOURCE_DIR}/data/stoat_suppression_list.txt -r ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
 #target_link_libraries(calc ...)
 

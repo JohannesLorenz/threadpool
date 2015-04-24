@@ -22,7 +22,7 @@ See point 1.
 Please see the LICENSE.txt file.
 
 # 4 Documentation
-Type make doc for doxygen. TODO: more stuff here...
+Type `make threadpool_doc` for doxygen. TODO: more stuff here...
 
 # 5 Installation & Debugging
 Please see the INSTALL.txt file.
