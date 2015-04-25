@@ -21,47 +21,31 @@
 #define THREADPOOL_H
 
 #include <vector>
-#include <mutex>
+//#include <mutex>
 #include "semaphore.h" // TODO: std::sem?
 
 namespace threadpool {
 
 class thread_t;
 
-class threadpool_t
-{
-	sem_t sem;
+namespace detail {
 
-//	std::mutex init_mutex;
+class threadpool_base
+{
+
+protected:
+	sem_t sem;
 	std::vector<thread_t*> threads;
-	
-	void enqueue() { sem_wait(&sem);  }
+	std::vector<thread_t> zombies;
+
+private:
+	friend class threadpool::thread_t;
+
+	void enqueue();
 
 	//! entry function for the thread
-	void join() {
-	//	(void) t;
-	/*	init_mutex.lock();
-		threads.push_back(&t); // TODO: insert ordered?
-		init_mutex.unlock();*/
-		// TODO: make this thread-safe: locks
-		enqueue();
-	}
+	void join();
 
-	bool release_thread() {
-		return 0 == sem_post(&sem);
-	}
-	
-	// debugging
-	int get_value() {
-		int ret;
-		sem_getvalue(&sem, &ret);
-		return ret;
-	}
-
-	friend class thread_t;
-
-	std::vector<thread_t> zombies;
-public:
 	//! moves the threads ownership here after it has been (?) finished
 	void die_here(thread_t& ill_thread) {
 		ill_thread.running = false; // don't die twice
@@ -72,23 +56,27 @@ public:
 	void add_me(thread_t& self) {
 		threads.push_back(&self);
 	}
+protected:
+	static void set_tp_nullptr(thread_t* t);
+};
 
-	threadpool_t() {
-		sem_init(&sem, 0, 0);
+}
+
+class threadpool_t : public detail::threadpool_base
+{
+//	std::mutex init_mutex;
+	
+	bool release_thread() {
+		return 0 == sem_post(&sem);
 	}
-	~threadpool_t()
-	{
-//		init_mutex.lock();
-		for(thread_t* t : threads)
-		 t->tp = nullptr;
-		std::size_t sz = threads.size();
-//		init_mutex.unlock();
-		for(int count = sz; count; --count)
-		 release_thread();
-		for(thread_t& t : zombies)
-		 t.join();
-		sem_destroy(&sem);
-	}
+	
+	//! debugging: returns semaphore value
+	int get_value();
+
+	//friend class thread_t;
+public:
+	threadpool_t();
+	~threadpool_t();
 };
 
 }

@@ -20,8 +20,14 @@
 #include "thread.h"
 #include "threadpool.h"
 
-namespace threadpool
+namespace threadpool {
+namespace detail {
+
+thread_base::thread_base(threadpool_t &_tp) : tp(&_tp)
 {
+}
+
+}
 
 void thread_t::join_pool(threadpool_t *tp) {
 	tp->join();
@@ -30,8 +36,8 @@ void thread_t::join_pool(threadpool_t *tp) {
 void thread_t::clean_up()
 {
 	if(running) {
-		if(tp) { // if tp still exists and ???
-       			tp->die_here(*this);
+		if(tp) {
+			tp->die_here(*this);
 //	 tp->die_here(std::move(*this));
 //	thred.join();
 		}
@@ -42,8 +48,8 @@ void thread_t::clean_up()
 void thread_t::join() { thred.join();  }
 
 thread_t::thread_t(threadpool_t &_tp) :
-	thred(join_pool, &_tp),
-	tp(&_tp)
+	thread_base(_tp),
+	thred(join_pool, &_tp)
 {
 	_tp.add_me(*this);
 }

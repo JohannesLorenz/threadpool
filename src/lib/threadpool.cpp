@@ -20,3 +20,52 @@
 #include "thread.h"
 #include "threadpool.h"
 
+namespace threadpool {
+namespace detail {
+
+void threadpool_base::enqueue() { sem_wait(&sem);  }
+
+void threadpool_base::join()
+{
+	//	(void) t;
+	/*	init_mutex.lock();
+	threads.push_back(&t); // TODO: insert ordered?
+	init_mutex.unlock();*/
+	// TODO: make this thread-safe: locks
+	enqueue();
+}
+
+void threadpool_base::set_tp_nullptr(thread_t *t)
+{
+	 t->tp = nullptr;
+}
+
+}
+
+int threadpool_t::get_value()
+{
+	int ret;
+	sem_getvalue(&sem, &ret);
+	return ret;
+}
+
+threadpool_t::threadpool_t() {
+	sem_init(&sem, 0, 0);
+}
+
+threadpool_t::~threadpool_t()
+{
+	// init_mutex.lock();
+	for(thread_t* t : threads)
+	 set_tp_nullptr(t);
+	std::size_t sz = threads.size();
+	// init_mutex.unlock();
+	for(int count = sz; count; --count)
+	 release_thread();
+	for(thread_t& t : zombies)
+	 t.join();
+	sem_destroy(&sem);
+}
+
+}
+

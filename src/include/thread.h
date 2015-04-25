@@ -26,14 +26,23 @@ namespace threadpool {
 
 class threadpool_t;
 
-class thread_t
+namespace detail {
+
+//! base class with threadpool_t access
+class thread_base
+{
+	friend class threadpool_base;
+protected:
+	bool running = true;
+	threadpool_t* tp;
+	thread_base(threadpool_t& _tp);
+};
+
+}
+
+class thread_t : public detail::thread_base
 {
 	std::thread thred;
-public: // TODO
-	bool running = true;
-public: // TODO!
-	threadpool_t* tp;
-private:
 	static void join_pool(threadpool_t* tp);
 	void clean_up();
 public:
@@ -41,6 +50,9 @@ public:
 	thread_t(threadpool_t& _tp);
 	thread_t(const thread_t& ) = delete;
 	thread_t(thread_t&& ) = default;
+	thread_t() = default;
+
+	thread_t& operator=(thread_t&& other) = default;
 
 	~thread_t();
 };
