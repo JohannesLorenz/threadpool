@@ -20,7 +20,6 @@
 #ifndef THREADPOOL_H
 #define THREADPOOL_H
 
-#include <iostream>
 #include <vector>
 #include <mutex>
 #include "semaphore.h" // TODO: std::sem?
@@ -31,11 +30,6 @@ class thread_t;
 
 class threadpool_t
 {
-	/*struct thread_home
-	{
-		thread* t;
-		mailbox;
-	};*/
 	sem_t sem;
 
 //	std::mutex init_mutex;
@@ -43,7 +37,8 @@ class threadpool_t
 	
 	void enqueue() { sem_wait(&sem);  }
 
-	void join(thread_t& ) {
+	//! entry function for the thread
+	void join() {
 	//	(void) t;
 	/*	init_mutex.lock();
 		threads.push_back(&t); // TODO: insert ordered?
@@ -67,11 +62,13 @@ class threadpool_t
 
 	std::vector<thread_t> zombies;
 public:
+	//! moves the threads ownership here after it has been (?) finished
 	void die_here(thread_t& ill_thread) {
-		//ill_thread.tp = nullptr; // don't die twice
 		ill_thread.running = false; // don't die twice
 		zombies.push_back(std::move(ill_thread));
 	}
+
+	//! to be called by main thread
 	void add_me(thread_t& self) {
 		threads.push_back(&self);
 	}
@@ -79,20 +76,17 @@ public:
 	threadpool_t() {
 		sem_init(&sem, 0, 0);
 	}
-	~threadpool_t() {
-		std::cerr << get_value() << std::endl;
+	~threadpool_t()
+	{
 //		init_mutex.lock();
 		for(thread_t* t : threads)
 		 t->tp = nullptr;
 		std::size_t sz = threads.size();
 //		init_mutex.unlock();
-		for(int count = sz; count; --count) {
-			release_thread();
-		}
-		for(thread_t& t : zombies) {
-			std::cerr << "joining..." << std::endl;
-			t.join();
-		}
+		for(int count = sz; count; --count)
+		 release_thread();
+		for(thread_t& t : zombies)
+		 t.join();
 		sem_destroy(&sem);
 	}
 };

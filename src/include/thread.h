@@ -20,7 +20,6 @@
 #ifndef THREAD_H
 #define THREAD_H
 
-#include <atomic>
 #include <thread>
 
 namespace threadpool {
@@ -35,14 +34,13 @@ public: // TODO
 public: // TODO!
 	threadpool_t* tp;
 private:
-	static void join_pool(thread_t *t, threadpool_t* tp);
+	static void join_pool(threadpool_t* tp);
 	void clean_up();
 public:
 	void join();
 	thread_t(threadpool_t& _tp);
 	thread_t(const thread_t& ) = delete;
 	thread_t(thread_t&& ) = default;
-
 
 	~thread_t();
 };
