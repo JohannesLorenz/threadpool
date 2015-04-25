@@ -19,13 +19,13 @@ A simple ALSA implementation of a (mostly) realtime safe threadpool.
 See point 1.
 
 # 3 License
-Please see the LICENSE.txt file.
+Please see the [LICENSE](LICENSE.txt) file.
 
 # 4 Documentation
 Type `make threadpool_doc` for doxygen. TODO: more stuff here...
 
 # 5 Installation & Debugging
-Please see the INSTALL.txt file.
+Please see the [INSTALL](INSTALL.txt) file.
 
 # 6 Examples
 
