@@ -34,8 +34,9 @@ class thread_base
 	friend class threadpool_base;
 protected:
 	bool running = true;
-	threadpool_t* tp;
+	threadpool_t* tp = nullptr;
 	thread_base(threadpool_t& _tp);
+	thread_base() = default;
 };
 
 }
@@ -52,6 +53,7 @@ public:
 	thread_t(thread_t&& ) = default;
 	thread_t() = default;
 
+	thread_t& operator=(const thread_t& other) = delete;
 	thread_t& operator=(thread_t&& other) = default;
 
 	~thread_t();
