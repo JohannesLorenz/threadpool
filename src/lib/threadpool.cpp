@@ -35,9 +35,14 @@ void threadpool_base::join()
 	enqueue();
 }
 
+void threadpool_base::die_here(thread_t &ill_thread) {
+	ill_thread.running = false; // don't die twice
+	zombies.push_back(std::move(ill_thread));
+}
+
 void threadpool_base::set_tp_nullptr(thread_t *t)
 {
-	 t->tp = nullptr;
+	t->tp = nullptr;
 }
 
 }

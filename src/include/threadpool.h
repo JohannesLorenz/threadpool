@@ -47,10 +47,7 @@ private:
 	void join();
 
 	//! moves the threads ownership here after it has been (?) finished
-	void die_here(thread_t& ill_thread) {
-		ill_thread.running = false; // don't die twice
-		zombies.push_back(std::move(ill_thread));
-	}
+	void die_here(thread_t& ill_thread);
 
 	//! to be called by main thread
 	void add_me(thread_t& self) {
