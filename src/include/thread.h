@@ -53,8 +53,8 @@ public:
 	thread_t(thread_t&& ) = default;
 	thread_t() = default;
 
-	thread_t& operator=(const thread_t& other) = delete;
-	thread_t& operator=(thread_t&& other) = default;
+	thread_t& operator=(const thread_t& ) = delete;
+	thread_t& operator=(thread_t&& ) = default;
 
 	~thread_t();
 };
