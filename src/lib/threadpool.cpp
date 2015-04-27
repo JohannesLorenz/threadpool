@@ -32,7 +32,12 @@ void threadpool_base::join()
 	threads.push_back(&t); // TODO: insert ordered?
 	init_mutex.unlock();*/
 	// TODO: make this thread-safe: locks
-	enqueue();
+
+	bool go_on = true;
+	do {
+		enqueue();
+		go_on = !quit_sequence && callback();
+	} while(go_on);
 }
 
 void threadpool_base::die_here(thread_t &ill_thread) {
@@ -54,12 +59,15 @@ int threadpool_t::get_value()
 	return ret;
 }
 
-threadpool_t::threadpool_t() {
+void threadpool_t::init()
+{
 	sem_init(&sem, 0, 0);
 }
 
 threadpool_t::~threadpool_t()
 {
+	quit_sequence = true;
+
 	// init_mutex.lock();
 	for(thread_t* t : threads)
 	 set_tp_nullptr(t);

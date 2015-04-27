@@ -43,20 +43,40 @@ protected:
 
 class thread_t : public detail::thread_base
 {
+public:
+	bool is_main_thread;
 	std::thread thred;
 	static void join_pool(threadpool_t* tp);
 	void clean_up();
+protected:
+	thread_t(threadpool_t& _tp, bool is_main_thread);
 public:
 	void join();
-	thread_t(threadpool_t& _tp);
+	thread_t(threadpool_t& _tp) : thread_t(_tp, false) {}
 	thread_t(const thread_t& ) = delete;
+	// TODO: update threadpool about ptr change??
 	thread_t(thread_t&& ) = default;
 	thread_t() = default;
 
 	thread_t& operator=(const thread_t& ) = delete;
+	// TODO: update threadpool about ptr change??
 	thread_t& operator=(thread_t&& ) = default;
 
 	~thread_t();
+};
+
+class main_thread_t : public thread_t
+{
+public:
+	main_thread_t(threadpool_t& _tp)
+		: thread_t(_tp, true) {}
+
+	//! runs this thread. this should be called by the main thread
+	//! @note: you might want to release a thread of the threadpool
+	//! @a before you call this function
+	void acquire() { join_pool(tp); }
+
+	// TODO: allow moving???
 };
 
 }

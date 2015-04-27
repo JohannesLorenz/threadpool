@@ -16,7 +16,7 @@
 /* along with this program; if not, write to the Free Software           */
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
-
+#include <iostream>
 #include "thread.h"
 #include "threadpool.h"
 
@@ -38,21 +38,25 @@ void thread_t::clean_up()
 	if(running) {
 		if(tp) {
 			tp->die_here(*this);
-//	 tp->die_here(std::move(*this));
-//	thred.join();
+			// tp->die_here(std::move(*this));
+			// thred.join();
 		}
 		else join();
 	}
 }
 
-void thread_t::join() { thred.join();  }
-
-thread_t::thread_t(threadpool_t &_tp) :
+thread_t::thread_t(threadpool_t &_tp, bool is_main_thread) :
 	thread_base(_tp),
-	thred(join_pool, &_tp)
+	is_main_thread(is_main_thread),
+	thred(is_main_thread ? std::thread() : std::thread(join_pool, &_tp))
 {
+	(void)is_main_thread; // TODO?
 	_tp.add_me(*this);
 }
+
+void thread_t::join() { thred.join();  }
+
+
 
 thread_t::~thread_t() { clean_up(); }
 

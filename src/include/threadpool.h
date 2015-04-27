@@ -32,14 +32,18 @@ namespace detail {
 
 class threadpool_base
 {
-
 protected:
 	sem_t sem;
 	std::vector<thread_t*> threads;
 	std::vector<thread_t> zombies;
+	bool quit_sequence = false;
 
 private:
 	friend class threadpool::thread_t;
+
+	//! this will be called by a thread when it leaves the semaphore
+	//! @return should return if the thread should enqueue again
+	virtual bool callback() = 0;
 
 	void enqueue();
 
@@ -71,8 +75,16 @@ class threadpool_t : public detail::threadpool_base
 	int get_value();
 
 	//friend class thread_t;
+
+	void init();
+
 public:
-	threadpool_t();
+	threadpool_t() { init(); }
+
+	//! careful, this is only allowed if no tasks are open
+	//! otherwise, we'll call the destructor, and before
+	//! quit_sequence gets true, another virtual callback is made.
+	//! virtual callbacks are not allowed after dtor call.
 	~threadpool_t();
 };
 
