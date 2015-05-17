@@ -33,10 +33,10 @@ endif()
 endif()
 
 #Name your project here
-project(ringbuffer)
+project(threadpool)
 
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "0")
+SET(VERSION_MAJOR "0")
+SET(VERSION_MINOR "8")
 SET(VERSION_PATCH "0")
 SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
@@ -175,6 +175,26 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wall -Werror ${WARN_EXC} -std=c++11 -pipe")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${FLTO_FLAGS}")
+
+
+
+
+# install paths
+get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
+if("${LIB64}" STREQUAL "TRUE")
+    set(LIBSUFFIX 64)
+else()
+    set(LIBSUFFIX "")
+endif()
+
+set(THREADPOOL_LIB_DIR "lib${LIBSUFFIX}" CACHE PATH "Installation directory for libraries")
+set(THREADPOOL_INC_DIR "include" CACHE PATH "Installation directory for headers")
+mark_as_advanced(
+	THREADPOOL_LIB_DIR
+	THREADPOOL_INC_DIR
+	)
+
+
 
 MESSAGE("READING SUB-DIRECTORIES...")
 #add_subdirectory(rtosc)

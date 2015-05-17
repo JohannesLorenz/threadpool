@@ -19,4 +19,6 @@ SOURCES += src/lib/threadpool.cpp \
 
 OTHER_FILES += src/lib/CMakeLists.txt \
 	src/test/CMakeLists.txt \
+	src/CMakeLists.txt \
+	src/threadpool.pc.in \
 	CMakeLists.txt
