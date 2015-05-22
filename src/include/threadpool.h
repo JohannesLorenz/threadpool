@@ -30,6 +30,7 @@ class thread_t;
 
 namespace detail {
 
+//! threadpool base class which exchanges data with thread_t.
 class threadpool_base
 {
 protected:
