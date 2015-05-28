@@ -1,247 +1,30 @@
-#
-# General
-#
-
-#Specify the version being used aswell as the language
 cmake_minimum_required(VERSION 2.8)
+include(cmake/init_project.txt)
 
-#Compiler
-set(WARN_EXC "")
-
-#if(NOT COMPILER_SET STREQUAL "1")
-#if(COMPILER STREQUAL "gcc")
-#	# enable these flags if you get tons of errors from boost...
-#	#set(WARN_EXC "-Wno-unused-local-typedefs -Wno-maybe-uninitialized")
-#	set(CMAKE_CXX_FLAGS_RELEASE "-flto")
-#	set(FLTO_FLAGS "-flto")
-#
-#	SET( CMAKE_CXX_COMPILER "/usr/bin/g++" ) # the user bin is a dumb fix for a cmake bug
-#	SET( CMAKE_CC_COMPILER "/usr/bin/gcc" )
-#elseif(COMPILER STREQUAL "clang")
-#	set(FLTO_FLAGS "") # not supported by clang on most platforms
-#
-#	SET( CMAKE_CXX_COMPILER "/usr/bin/clang++" )
-#	SET( CMAKE_CC_COMPILER "/usr/bin/clang" )
-#elseif(COMPILER STREQUAL "stoat")
-#	set(FLTO_FLAGS "") # not supported
-#
-#	SET( CMAKE_CXX_COMPILER "/usr/local/bin/stoat-compile++" )
-#	SET( CMAKE_CC_COMPILER "/usr/local/bin/stoat-compile" )
-#else()
-#	message(FATAL_ERROR "Please specify -DCOMPILER=[gcc|clang|stoat]")
-#endif()
-#endif()
-
-#Name your project here
+# settings
 project(threadpool)
+set(DESCRIPTION "a simple C++ threadpool library")
 
 SET(VERSION_MAJOR "0")
 SET(VERSION_MINOR "8")
 SET(VERSION_PATCH "0")
-#SET(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
-#
-#MESSAGE("")
-#MESSAGE("WELCOME")
-#MESSAGE("This is the Makefile for `${PROJECT_NAME} ${VERSION}'")
-#MESSAGE("")
-#MESSAGE("READING CONFIGURATION...")
-#
-##set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
-#
-## help
-## TODO: $myproject from project()
-## MESSAGE("This is the Makefile for ${MYPROJECT} (version ${VERSION}).")
-## MESSAGE("Options: (-D...=..., cmake -L for details)")
-## MESSAGE(" * COMPILER: ${COMPILER} (allowed: [gcc|clang])")
-#
-#SET(COMPILER "" CACHE STRING "Compiler to use (allowed: [gcc|clang|stoat])")
 
-# testing
-#enable_testing ()
-
-#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/res/")
-#SET(src_base "${CMAKE_CURRENT_SOURCE_DIR}/src/")
-#SET(res_dir "${src_base}res/")
-
-#function(cp_script script_name)
-#	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${script_name}
-#		${CMAKE_CURRENT_BINARY_DIR}/${script_name} COPYONLY)
-#endfunction()
-#
-#include_directories("${CMAKE_CURRENT_BINARY_DIR}/src/") # for config.h
-#include_directories("${CMAKE_CURRENT_SOURCE_DIR}/src/include")
-
-#
 # options
-#
-
 option(USE_MLOCK "provide the mlock system call" ON)
 
-set(DESCRIPTION "a simple C++ threadpool library")
-
-#
-# special headers
-#
-
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/src/config.h)
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/src/version.h)
-
-# if(CUSTOM_INCLUDE_PATHS STREQUAL "")
-# else()
-# 	include_directories("${CUSTOM_INCLUDE_PATHS}")
-# endif()
-#link_directories("${ADD_LINK_DIRS}")
-
-# INCLUDE (CheckIncludeFiles)
-
-
-MESSAGE("CHECKING FOR LIBRARIES...")
-
-#TODO!!!
-#find_package(PkgConfig REQUIRED)
-
-#set(Boost_USE_STATIC_LIBS OFF)
-#set(Boost_USE_MULTITHREADED OFF)
-#set(Boost_USE_STATIC_RUNTIME OFF)
-#find_package(Boost 1.49.0
-#	REQUIRED
-#	COMPONENTS graph)
-
+# libraries
+MESSAGE("Checking for libraries...")
 find_package(Threads) # = pthreads, for std::thread
 list(APPEND THREAD_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 
-#todo: -> rtosc?
+# custom targets
+add_custom_target(stoat_threadpool stoat -c
+	-w /usr/local/share/stoat/whitelist.txt
+	-b /usr/local/share/stoat/blacklist.txt
+	-w ${CMAKE_CURRENT_SOURCE_DIR}/data/stoat_suppression_list.txt
+	-r ${CMAKE_CURRENT_BINARY_DIR}/src/)
 
-#target_link_libraries(minimal ${AUDIO_LIBRARIES})
-
-#if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/usr/CMakeLists.txt")
-#	set(BUILD_USR_DIR true)
-#else()
-#	set(BUILD_USR_DIR false)
-#endif()
-
-#if(Boost_FOUND)
-#	include_directories(${Boost_INCLUDE_DIRS})
-#	add_executable(progname file1.cxx file2.cxx)
-#	target_link_libraries(progname ${Boost_LIBRARIES})
-#endif()
-
-#
-# Compile
-#
-
-#if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-#if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
-#	message(FATAL_ERROR "Please set -DCMAKE_BUILD_TYPE=[Debug|Release]")
-#endif()
-#endif()
-
-# FLAGS
-# the order of -Wall -Wno-unknown-pragmas is important
-# TODO: -Werror
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra -Wall -Werror ${WARN_EXC} -std=c++11 -pipe")
-#set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-#set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${FLTO_FLAGS}")
-
-
-
-
-# install paths
-#get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
-#if("${LIB64}" STREQUAL "TRUE")
-#    set(LIBSUFFIX 64)
-#else()
-#    set(LIBSUFFIX "")
-#endif()
-#
-#set(THREADPOOL_LIB_DIR "lib${LIBSUFFIX}" CACHE PATH "Installation directory for libraries")
-#set(THREADPOOL_INC_DIR "include" CACHE PATH "Installation directory for headers")
-#mark_as_advanced(
-#	THREADPOOL_LIB_DIR
-#	THREADPOOL_INC_DIR
-#	)
-
-
-
-#MESSAGE("READING SUB-DIRECTORIES...")
-#add_subdirectory(rtosc)
-#add_subdirectory(src)
-#add_subdirectory(doc)
-
-add_custom_target(stoat_threadpool stoat -c -w /usr/local/share/stoat/whitelist.txt -b /usr/local/share/stoat/blacklist.txt -w ${CMAKE_CURRENT_SOURCE_DIR}/data/stoat_suppression_list.txt -r ${CMAKE_CURRENT_BINARY_DIR}/src/)
-
-#target_link_libraries(calc ...)
-
-
-#add_test (test sh ${CMAKE_CURRENT_BINARY_DIR}/src/test.sh)
-#TODO: use cmake instead of sh script?
-
-#
-# CPack Stuff
-#
-
-#SET(MY_NAME_CAP ${PROJECT_NAME})
-#SET(MY_NAME_LOW ${PROJECT_NAME}) # (TODO: tolower)
-#STRING(TOLOWER ${MY_NAME_CAP} MY_NAME_LOW)
-#SET(MY_PACKAGE_FILE_NAME "${MY_NAME_LOW}-${VERSION}-${OS}-${MY_HOST_STR}")
-#SET(MY_PACKAGE_FILE_NAME "${MY_NAME_LOW}-${VERSION}")
-#SET(MY_SRC_PACKAGE_FILE_NAME "${MY_NAME_LOW}-${VERSION}")
-
-#SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${MY_NAME_CAP} - a lock free, multi-reader ringbuffer lib")
-#IF(WIN32)
-#SET(CPACK_PACKAGE_EXECUTABLES "${MY_NAME_LOW}.exe")
-#ELSE(WIN32)
-#SET(CPACK_PACKAGE_EXECUTABLES "${MY_NAME_LOW}")
-#SET(CPACK_STRIP_FILES "bin/${MY_NAME_LOW}") # TODO: bin?
-#ENDIF(WIN32)
-#S#ET(CPACK_PACKAGE_FILE_NAME ${MY_PACKAGE_FILE_NAME})
-#S#ET(CPACK_PACKAGE_INSTALL_DIRECTORY "${MY_SRC_PACKAGE_FILE_NAME}")
-#SET(CPACK_PACKAGE_VENDOR "${MY_NAME_CAP} Developers")
-#SET(CPACK_PACKAGE_VERSION ${VERSION})
-#SET(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
-#SET(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
-#SET(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
-#SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt")
-#SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
- #SET(CPACK_SOURCE_GENERATOR "TBZ2")
- #SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${MY_SRC_PACKAGE_FILE_NAME}")
- #INCLUDE(CPack)
-
+# processing
 include(cmake/process_project.txt)
-
-#
-# Summary
-#
-
 print_summary_base()
-
-#MESSAGE("")
-#MESSAGE("SUMMARY:")
-#MESSAGE(" * Project: ${PROJECT_NAME} ${VERSION}")
-#MESSAGE(" * Compilers Used: ${COMPILER} (${CMAKE_CXX_COMPILER}, ${CMAKE_CC_COMPILER})")
-#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#	set(MSG_BUILD_TYPE_FLAG ${CMAKE_CXX_FLAGS_DEBUG})
-#else()
-#	set(MSG_BUILD_TYPE_FLAG ${CMAKE_CXX_FLAGS_RELEASE})
-#endif()
-#MESSAGE(" * Build Type: ${CMAKE_BUILD_TYPE} (${MSG_BUILD_TYPE_FLAG})")
-#if(BUILD_QT_GUI)
-#	set(MSG_QT_FOUND "Yes")
-#else(BUILD_QT_GUI)
-#	set(MSG_QT_FOUND "No - install Qt if you want")
-#endif(BUILD_QT_GUI)
-#MESSAGE(" * Build Qt GUI: ${MSG_QT_FOUND}")
-#if(BUILD_USR_DIR)
-#	set(MSG_USR_FOUND "Yes - Found source files")
-#else(BUILD_USR_DIR)
-#	set(MSG_USR_FOUND "No - No usr dir in /src")
-#endif(BUILD_USR_DIR)
-#MESSAGE(" * Build USR DIR: ${MSG_USR_FOUND}")
-#MESSAGE(" * Building Doc: No - Type make doc if you want")
-#MESSAGE(" * Executing Tests: No - Type make test if you want")
-#MESSAGE("")
-#MESSAGE("Now, type make and pray...")
-#MESSAGE("")
 
