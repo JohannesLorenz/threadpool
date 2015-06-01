@@ -20,6 +20,7 @@
 #ifndef THREAD_H
 #define THREAD_H
 
+#include <atomic>
 #include <thread>
 
 namespace threadpool {
@@ -28,12 +29,42 @@ class threadpool_t;
 
 namespace detail {
 
+//! boolean that is set to false when moved
+class owned_bool
+{
+	bool _value;
+public:
+	owned_bool(owned_bool&& other) :
+		_value(std::move(other._value))
+	{
+		other._value = false;
+	}
+	owned_bool(const owned_bool& ) = delete;
+
+	owned_bool& operator=(owned_bool&& other) {
+		_value = std::move(other._value);
+		other._value = false;
+		return *this;
+	}
+	owned_bool& operator=(const owned_bool& ) = delete;
+
+	owned_bool(bool value) : _value(value) {}
+	owned_bool() = default;
+	operator bool() const { return _value; }
+};
+
 //! base class with threadpool_t access
 class thread_base
 {
 	friend class threadpool_base;
 protected:
-	bool running = true;
+	owned_bool running = true; //!< only to be used by main thread
+	//!< only flipped once by thread itself,
+	//!< and "now and then" read by main thread
+	bool zombie = false;
+
+	//!< main: only uses or changed this before running or
+	//!< thread itself uses it to join and to leave the tp
 	threadpool_t* tp = nullptr;
 	thread_base(threadpool_t& _tp);
 	thread_base() = default;
@@ -41,13 +72,22 @@ protected:
 
 }
 
+//! thread class for general threads
+//! all members are only either used by self or main thread
+//! each function must make this sure each time it is being called
+//! @note all public functions are only allowed to be called by
+//!  the main thread
 class thread_t : public detail::thread_base
 {
 public:
 	bool is_main_thread;
+private:
 	std::thread thred;
-	static void join_pool(threadpool_t* tp);
-	void clean_up();
+protected:
+	//!< only called by this thread
+	static void join_pool(threadpool_t* tp, thread_t* self);
+private:
+	void clean_up(); //!< main thread only
 protected:
 	thread_t(threadpool_t& _tp, bool is_main_thread);
 public:
@@ -74,7 +114,7 @@ public:
 	//! runs this thread. this should be called by the main thread
 	//! @note: you might want to release a thread of the threadpool
 	//! @a before you call this function
-	void acquire() { join_pool(tp); }
+	void acquire() { join_pool(tp, this); } // TODO: safe??
 
 	// TODO: allow moving???
 };

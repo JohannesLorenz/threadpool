@@ -15,7 +15,8 @@ HEADERS += src/include/threadpool.h \
 	src/include/thread.h
 SOURCES += src/lib/threadpool.cpp \
 	src/lib/thread.cpp \
-    src/test/test.cpp
+    src/test/test.cpp \
+    src/test/test2.cpp
 
 OTHER_FILES += src/lib/CMakeLists.txt \
 	src/test/CMakeLists.txt \

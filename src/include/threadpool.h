@@ -21,8 +21,8 @@
 #define THREADPOOL_H
 
 #include <vector>
-//#include <mutex>
-#include "semaphore.h" // TODO: std::sem?
+#include <semaphore.h> // TODO: std::sem?
+#include <atomic>
 
 namespace threadpool {
 
@@ -35,8 +35,9 @@ class threadpool_base
 {
 protected:
 	sem_t sem;
-	std::vector<thread_t*> threads;
-	std::vector<thread_t> zombies;
+/*	std::vector<thread_t*> threads;
+	std::vector<thread_t> zombies;*/
+	std::atomic<std::size_t> n_threads;
 	bool quit_sequence = false;
 
 private:
@@ -49,15 +50,14 @@ private:
 	void enqueue();
 
 	//! entry function for the thread
-	void join();
+	void join(thread_t& self);
 
 	//! moves the threads ownership here after it has been (?) finished
 	void die_here(thread_t& ill_thread);
 
 	//! to be called by main thread
-	void add_me(thread_t& self) {
-		threads.push_back(&self);
-	}
+	void count_me() { ++n_threads; }
+
 protected:
 	static void set_tp_nullptr(thread_t* t);
 };
@@ -76,6 +76,8 @@ class threadpool_t : public detail::threadpool_base
 	int get_value();
 
 	//friend class thread_t;
+
+	std::atomic<thread_t*> thread_exchange;
 
 	void init();
 

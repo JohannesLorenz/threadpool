@@ -17,53 +17,43 @@
 /* Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110, USA  */
 /*************************************************************************/
 
+#include <iostream>
+#include <vector>
+
 #include "thread.h"
 #include "threadpool.h"
 
-namespace threadpool {
-namespace detail {
-
-// only data access before thread runs
-thread_base::thread_base(threadpool_t &_tp) : tp(&_tp)
+class test_threadpool : public threadpool::threadpool_t
 {
-}
-
-}
-
-void thread_t::join_pool(threadpool_t *tp, thread_t* self) {
-	tp->join(*self);
-}
-
-void thread_t::clean_up() // only called by main thread after initialisation
-{
-	zombie = true;
-	if(running) { // running: main thread only
-		// we might be out of any threadpool
-		if(tp) { // tp:
-			tp->die_here(*this);
-			// tp->die_here(std::move(*this));
-			// thred.join();
-		}
-		else join();
+	std::vector<threadpool::thread_t> threads;
+public:
+	test_threadpool() : threads(1) {
+		threads[0] = threadpool::thread_t(*this);
 	}
-}
+	bool callback() { return true; }
+};
 
-thread_t::thread_t(threadpool_t &_tp, bool is_main_thread) :
-	thread_base(_tp),
-	is_main_thread(is_main_thread)
-	//thred(is_main_thread ? std::thread() : std::thread(join_pool, &_tp))
+int main()
 {
-	_tp.count_me(*this);
-	thred = is_main_thread ? std::thread() : std::thread(join_pool, &_tp, this);
-	// no access by main thread afterwards
+	try {
+		test_threadpool tp;
+	} catch (const char* err) {
+		std::cerr << "Aborting on error caught: " << err << std::endl;
+		return 1;
+	}
 
-	// TODO: in ctor would be nice, but after _tp.add_me -> maybe when initing thread_base?
+	return 0;
 }
 
-// access to thred is main only
-void thread_t::join() { thred.join(); }
 
-// safety relies on clean_up
-thread_t::~thread_t() { clean_up(); }
 
-}
+
+
+
+
+
+
+
+
+
+

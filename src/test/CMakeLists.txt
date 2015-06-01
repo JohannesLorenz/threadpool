@@ -10,6 +10,9 @@ include_directories("${incl_dir}")
 add_executable(test_tp test.cpp)
 target_link_libraries(test_tp ${THREAD_LIBRARIES} ${AUDIO_LIBRARIES} threadpool)
 
+add_executable(test_tp2 test2.cpp)
+target_link_libraries(test_tp2 ${THREAD_LIBRARIES} ${AUDIO_LIBRARIES} threadpool)
+
 #add_test(sequential test_seq)
 add_test(threadpool test_tp)
-
+add_test(threadpool2 test_tp2)

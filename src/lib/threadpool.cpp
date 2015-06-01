@@ -23,9 +23,9 @@
 namespace threadpool {
 namespace detail {
 
-void threadpool_base::enqueue() { sem_wait(&sem);  }
+void threadpool_base::enqueue() { sem_wait(&sem); }
 
-void threadpool_base::join()
+void threadpool_base::join(thread_t &self)
 {
 	//	(void) t;
 	/*	init_mutex.lock();
@@ -33,16 +33,29 @@ void threadpool_base::join()
 	init_mutex.unlock();*/
 	// TODO: make this thread-safe: locks
 
+	//std::cerr << "join: " << this << std::endl;
 	bool go_on = true;
 	do {
 		enqueue();
 		go_on = !quit_sequence && callback();
 	} while(go_on);
+
+	self.tp = nullptr;
+
+	//std::cerr << "end join: " << this << std::endl;
 }
 
+/*
+	a thread could simply die without notifying the threadpool
+	however, in this case, such threads should be joined,
+	and only the threadpool class can do so
+*/
 void threadpool_base::die_here(thread_t &ill_thread) {
+	//std::cerr << "dying: " << this << std::endl;
+#if 0
 	ill_thread.running = false; // don't die twice
 	zombies.push_back(std::move(ill_thread));
+#endif
 }
 
 void threadpool_base::set_tp_nullptr(thread_t *t)
@@ -66,14 +79,26 @@ void threadpool_t::init()
 
 threadpool_t::~threadpool_t()
 {
+	/*
+		generally, in order to avoid race conditions, we can not yet
+		delete everything. the order is:
+		 * allow all threads to stop soon
+		 * join all threads
+		 * then, in single-threaded mode, delete members
+	*/
+
+
 	quit_sequence = true;
 
 	// init_mutex.lock();
-	for(thread_t* t : threads)
-	 set_tp_nullptr(t);
+/*	std::cerr << "this: " << this  << std::endl;
+	std::cerr << "threads: " << threads.size()  << std::endl;
+	std::cerr << "zombies: " << zombies.size()  << std::endl;*/
+/*	for(thread_t* t : threads)
+	 set_tp_nullptr(t);*/
 	std::size_t sz = threads.size();
 	// init_mutex.unlock();
-	for(int count = sz; count; --count)
+	for(int count = sz; count; --count) // TODO: while(sz-->0)
 	 release_thread();
 	for(thread_t& t : zombies)
 	 t.join();
