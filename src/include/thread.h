@@ -80,9 +80,9 @@ protected:
 class thread_t : public detail::thread_base
 {
 public:
-	bool is_main_thread;
+	bool is_main_thread; //!< probably const
 private:
-	std::thread thred;
+	std::thread thred; //!< main thread only
 protected:
 	//!< only called by this thread
 	static void join_pool(threadpool_t* tp, thread_t* self);
@@ -112,7 +112,7 @@ public:
 		: thread_t(_tp, true) {}
 
 	//! runs this thread. this should be called by the main thread
-	//! @note: you might want to release a thread of the threadpool
+	//! @note you might want to release a thread of the threadpool
 	//! @a before you call this function
 	void acquire() { join_pool(tp, this); } // TODO: safe??
 

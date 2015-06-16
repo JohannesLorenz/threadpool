@@ -56,6 +56,7 @@ void threadpool_base::die_here(thread_t &ill_thread) {
 	ill_thread.running = false; // don't die twice
 	zombies.push_back(std::move(ill_thread));
 #endif
+	ill_thread.zombie = true;
 }
 
 void threadpool_base::set_tp_nullptr(thread_t *t)
@@ -75,6 +76,7 @@ int threadpool_t::get_value()
 void threadpool_t::init()
 {
 	sem_init(&sem, 0, 0);
+	quit_sequence.store(false);
 }
 
 threadpool_t::~threadpool_t()
@@ -96,12 +98,12 @@ threadpool_t::~threadpool_t()
 	std::cerr << "zombies: " << zombies.size()  << std::endl;*/
 /*	for(thread_t* t : threads)
 	 set_tp_nullptr(t);*/
-	std::size_t sz = threads.size();
+	std::size_t sz = n_threads; // threads.size();
 	// init_mutex.unlock();
 	for(int count = sz; count; --count) // TODO: while(sz-->0)
 	 release_thread();
-	for(thread_t& t : zombies)
-	 t.join();
+//	for(thread_t& t : zombies)
+//	 t.join();
 	sem_destroy(&sem);
 }
 

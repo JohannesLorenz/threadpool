@@ -34,11 +34,11 @@ namespace detail {
 class threadpool_base
 {
 protected:
-	sem_t sem;
+	sem_t sem; //!< thread safe by design
 /*	std::vector<thread_t*> threads;
 	std::vector<thread_t> zombies;*/
 	std::atomic<std::size_t> n_threads;
-	bool quit_sequence = false;
+	std::atomic<bool> quit_sequence;
 
 private:
 	friend class threadpool::thread_t;
@@ -56,7 +56,7 @@ private:
 	void die_here(thread_t& ill_thread);
 
 	//! to be called by main thread
-	void count_me() { ++n_threads; }
+	void count_me(thread_t& ) { ++n_threads; }
 
 protected:
 	static void set_tp_nullptr(thread_t* t);
